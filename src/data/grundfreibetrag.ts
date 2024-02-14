@@ -1,7 +1,6 @@
 // Quelle: https://de.wikipedia.org/wiki/Grundfreibetrag_(Deutschland)
-// ?? Realwert 2024
 export const values = [
-  ["Jahr", "Nominalwert", "Realwert"],
+  ["Jahr", "Nominalwert", "Realwert (2024)"],
   [2002, 7_235, 10_690],
   [2003, 7_235, 10_690],
   [2004, 7_664, 10_290],
