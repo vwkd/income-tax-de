@@ -1,5 +1,5 @@
 /**
- * Parameter um Steuerbetrag-Funktion zu bauen
+ * Parameter um Steuerbetrag zu berechnen
  */
 export interface Parameter {
   /**

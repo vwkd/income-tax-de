@@ -1,21 +1,29 @@
 import type { Parameter } from "./types.ts";
 
-/**
- * Funktion die Steuerbetrag berechnet
- * @param zvE zu versteuerndes Einkommen
- * @returns Steuerbetrag
- */
-export declare function steuerbetrag(zvE: number): number;
+export class Steuer {
+  #parameter: Parameter;
 
-/**
- * Baue Funktion die Steuerbetrag berechnet
- * @returns Funktion die Steuerbetrag berechnet
- */
-// Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
-export function get_steuerbetrag(
-  { E0, E1, E2, E3, S1, S2, S3, p1, sg1, p2, sg2, sg3, sg4 }: Parameter,
-): typeof steuerbetrag {
-  return (zvE: number) => {
+  /**
+   * Berechne Steuer für Jahr
+   *
+   * @param parameter Parameter für Jahr
+   */
+  constructor(parameter: Parameter) {
+    this.#parameter = parameter;
+  }
+
+  /**
+   * Berechne Steuerbetrag
+   *
+   * @param zvE zu versteuerndes Einkommen
+   * @returns Steuerbetrag
+   */
+  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
+  // note: nutzt "mathematisch gleichwertige Form" da Parameter dafür
+  steuerbetrag(zvE: number): number {
+    const { E0, E1, E2, E3, S1, S2, S3, p1, sg1, p2, sg2, sg3, sg4 } =
+      this.#parameter;
+
     // Nullzone (Grundfreibetrag)
     if (zvE <= E0) {
       return 0;
@@ -46,5 +54,53 @@ export function get_steuerbetrag(
     }
 
     throw new Error("unreachable");
-  };
+  }
+
+  /**
+   * Berechne Durchschnittssteuersatz
+   *
+   * @param zvE zu versteuerndes Einkommen
+   * @returns Steuersatz
+   */
+  steuersatz(zvE: number): number {
+    return this.steuerbetrag(zvE) / zvE;
+  }
+
+  /**
+   * Berechne Grenzsteuersatz
+   *
+   * @param zvE zu versteuerndes Einkommen
+   * @returns Grenzsteuersatz
+   */
+  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
+  grenzsteuersatz(zvE: number): number {
+    const { E0, E1, E2, E3, p1, sg1, p2, sg2, sg3, sg4 } = this.#parameter;
+
+    // Nullzone (Grundfreibetrag)
+    if (zvE <= E0) {
+      return 0;
+    }
+
+    // Progressionszone 1
+    if (E0 < zvE && zvE <= E1) {
+      return sg1 + (zvE - E0) * p1 * 2;
+    }
+
+    // Progressionszone 2
+    if (E1 < zvE && zvE <= E2) {
+      return sg2 + (zvE - E1) * p2 * 2;
+    }
+
+    // Proportionalitätszone 1
+    if (E2 < zvE && zvE <= E3) {
+      return sg3;
+    }
+
+    // Proportionalitätszone 2
+    if (zvE > E3) {
+      return sg4;
+    }
+
+    throw new Error("unreachable");
+  }
 }
