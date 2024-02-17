@@ -103,4 +103,38 @@ export class Steuer {
 
     throw new Error("unreachable");
   }
+
+  /**
+   * Liste Eckwerte des zvE
+   * @returns Array der Eckwerte des zvE
+   */
+  eckwerte(): number[] {
+    const { E0, E1, E2, E3 } = this.#parameter;
+    return [E0, E1, E2, E3];
+  }
+
+  /**
+   * Liste anfängliche Grenzsteuersätze
+   * @returns Array der anfänglichen Grenzsteuersätze
+   */
+  grenzsteuersätze(): number[] {
+    const { sg1, sg2, sg3, sg4 } = this.#parameter;
+    return [sg1, sg2, sg3, sg4];
+  }
+
+  /**
+   * Liste Eckwerte des zvE und anfängliche Grenzsteuersätze
+   *
+   * Achtung: Eckwärte des zvE um 1 erhöht, damit "ab" statt "bis"
+   * @returns Array der Eckwerte des zvE und anfänglichen Grenzsteuersätze
+   */
+  eckwerte_grenzsteuersätze(): { x: number; y: number }[] {
+    const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#parameter;
+    return [
+      { x: E0 + 1, y: sg1 },
+      { x: E1 + 1, y: sg2 },
+      { x: E2 + 1, y: sg3 },
+      { x: E3 + 1, y: sg4 },
+    ];
+  }
 }
