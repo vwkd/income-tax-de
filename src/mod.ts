@@ -1,14 +1,7 @@
 /**
- * Funktion die Steuerbetrag berechnet
- * @param {number} zvE zu versteuerndes Einkommen
- * @returns {number} Steuerbetrag
+ * Parameter um Steuerbetrag zu berechnen
  */
-export declare function steuerbetrag(zvE: number): number;
-
-/**
- * Parameter um Steuerbetrag-Funktion zu bauen
- */
-export interface Parameters {
+export interface Params {
   /**
    * Eckwert des zvE in Zone 0 (Grundfreibetrag)
    */
@@ -63,15 +56,28 @@ export interface Parameters {
   sg4: number;
 }
 
-/**
- * Baue Funktion die Steuerbetrag berechnet
- * @returns Funktion die Steuerbetrag berechnet
- */
-// Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
-export function get_steuerbetrag(
-  { E0, E1, E2, E3, S1, S2, S3, p1, sg1, p2, sg2, sg3, sg4 }: Parameters,
-): typeof steuerbetrag {
-  return (zvE: number) => {
+export class Steuer {
+  #params: Params;
+
+  /**
+   * Berechne Steuer für Jahr
+   * @param param0 Parameter für Jahr
+   */
+  constructor(params: Params) {
+    this.#params = params;
+  }
+
+  /**
+   * Berechne Steuerbetrag
+   * @param {number} zvE zu versteuerndes Einkommen
+   * @returns {number} Steuerbetrag
+   */
+  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
+  // note: nutzt "mathematisch gleichwertige Form" da Parameter dafür
+  steuerbetrag(zvE: number): number {
+    const { E0, E1, E2, E3, S1, S2, S3, p1, sg1, p2, sg2, sg3, sg4 } =
+      this.#params;
+
     // Nullzone (Grundfreibetrag)
     if (zvE <= E0) {
       return 0;
@@ -102,5 +108,51 @@ export function get_steuerbetrag(
     }
 
     throw new Error("unreachable");
-  };
+  }
+
+  /**
+   * Berechne Durchschnittssteuersatz
+   * @param {number} zvE zu versteuerndes Einkommen
+   * @returns {number} Steuersatz
+   */
+  steuersatz(zvE: number): number {
+    return this.steuerbetrag(zvE) / zvE;
+  }
+
+  /**
+   * Berechne Grenzsteuersatz
+   * @param {number} zvE zu versteuerndes Einkommen
+   * @returns {number} Grenzsteuersatz
+   */
+  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
+  grenzsteuersatz(zvE: number): number {
+    const { E0, E1, E2, E3, p1, sg1, p2, sg2, sg3, sg4 } = this.#params;
+
+    // Nullzone (Grundfreibetrag)
+    if (zvE <= E0) {
+      return 0;
+    }
+
+    // Progressionszone 1
+    if (E0 < zvE && zvE <= E1) {
+      return sg1 + (zvE - E0) * p1 * 2;
+    }
+
+    // Progressionszone 2
+    if (E1 < zvE && zvE <= E2) {
+      return sg2 + (zvE - E1) * p2 * 2;
+    }
+
+    // Proportionalitätszone 1
+    if (E2 < zvE && zvE <= E3) {
+      return sg3;
+    }
+
+    // Proportionalitätszone 2
+    if (zvE > E3) {
+      return sg4;
+    }
+
+    throw new Error("unreachable");
+  }
 }
