@@ -1,3 +1,5 @@
+import { Params } from "./mod.ts";
+
 // Quelle: https://de.wikipedia.org/wiki/Grundfreibetrag_(Deutschland)
 export const grundfreibetrag = [
   {
@@ -118,7 +120,7 @@ export const grundfreibetrag = [
 ];
 
 // Quelle: https://de.wikipedia.org/wiki/Tarifgeschichte_der_Einkommensteuer_in_Deutschland#Seit_2007
-export const steuerbetrag = [
+export const steuerbetrag: Params[] = [
   {
     "Jahr": 2007,
     "E0": 7_664,
