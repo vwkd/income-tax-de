@@ -3,6 +3,10 @@
  */
 export interface Parameter {
   /**
+   * Jahr für das die Parameter gelten
+   */
+  Jahr: number;
+  /**
    * Eckwert des zvE in Zone 0 (Grundfreibetrag)
    */
   E0: number;

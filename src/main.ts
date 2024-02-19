@@ -1,3 +1,4 @@
+import { range } from "d3";
 import type { Parameter } from "./types.ts";
 
 export class Steuer {
@@ -13,6 +14,36 @@ export class Steuer {
   }
 
   /**
+   * Liste Jahr
+   *
+   * @returns Jahr
+   */
+  jahr(): number {
+    return this.#parameter.Jahr;
+  }
+
+  /**
+   * Liste Eckwerte des zvE
+   *
+   * - Merke: Eckwerte sind "bis", nicht "ab"
+   * @returns Array der Eckwerte des zvE
+   */
+  eckwerte(): number[] {
+    const { E0, E1, E2, E3 } = this.#parameter;
+    return [E0, E1, E2, E3];
+  }
+
+  /**
+   * Liste anfängliche Grenzsteuersätze
+   *
+   * @returns Array der anfänglichen Grenzsteuersätze
+   */
+  grenzsteuersätze(): number[] {
+    const { sg1, sg2, sg3, sg4 } = this.#parameter;
+    return [sg1, sg2, sg3, sg4];
+  }
+
+  /**
    * Berechne Steuerbetrag
    *
    * @param zvE zu versteuerndes Einkommen
@@ -21,6 +52,10 @@ export class Steuer {
   // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
   // note: nutzt "mathematisch gleichwertige Form" da Parameter dafür
   steuerbetrag(zvE: number): number {
+    if (zvE < 0) {
+      throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
+    }
+
     const { E0, E1, E2, E3, S1, S2, S3, p1, sg1, p2, sg2, sg3, sg4 } =
       this.#parameter;
 
@@ -63,6 +98,14 @@ export class Steuer {
    * @returns Steuersatz
    */
   steuersatz(zvE: number): number {
+    if (zvE < 0) {
+      throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
+    }
+
+    if (zvE == 0) {
+      return 0;
+    }
+
     return this.steuerbetrag(zvE) / zvE;
   }
 
@@ -74,6 +117,10 @@ export class Steuer {
    */
   // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
   grenzsteuersatz(zvE: number): number {
+    if (zvE < 0) {
+      throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
+    }
+
     const { E0, E1, E2, E3, p1, sg1, p2, sg2, sg3, sg4 } = this.#parameter;
 
     // Nullzone (Grundfreibetrag)
@@ -105,45 +152,81 @@ export class Steuer {
   }
 
   /**
-   * Liste Eckwerte des zvE
-   * @returns Array der Eckwerte des zvE
-   */
-  eckwerte(): number[] {
-    const { E0, E1, E2, E3 } = this.#parameter;
-    return [E0, E1, E2, E3];
-  }
-
-  /**
-   * Liste anfängliche Grenzsteuersätze
-   * @returns Array der anfänglichen Grenzsteuersätze
-   */
-  grenzsteuersätze(): number[] {
-    const { sg1, sg2, sg3, sg4 } = this.#parameter;
-    return [sg1, sg2, sg3, sg4];
-  }
-
-  /**
-   * Liste Eckwerte des zvE und anfängliche Grenzsteuersätze
+   * Liste zvE und Durchschnittssteuersatz für Plot
    *
-   * @returns Array der Eckwerte des zvE und anfänglichen Grenzsteuersätze
+   * @returns Array der zvE und Durschnittssteuersätze
    */
-  eckwerte_grenzsteuersätze(): { zvE: number; Grenzwert: number }[] {
+  steuersatz_data(buffer = 100_000, steps = 1000): {
+    zvE: number;
+    Wert: number;
+    Wertart: "Durchschnittssteuersatz";
+  }[] {
+    const { E3 } = this.#parameter;
+
+    const start = 0;
+    const end = E3 + buffer;
+    const step = (end - start) / steps;
+
+    return range(start, end, step)
+      .map((zvE) => ({
+        zvE: zvE,
+        Wert: this.steuersatz(zvE),
+        Wertart: "Durchschnittssteuersatz",
+      }));
+  }
+
+  /**
+   * Liste zvE und Grenzsteuersatz für Plot
+   *
+   * - nur Eckwerte des zvE und anfängliche Grenzsteuersätze
+   * - besserer Plot als `grenzsteuersatz` Funktion
+   *
+   * @returns Array der zvE und Grenzsteuersätze
+   */
+  grenzsteuersatz_data(): {
+    zvE: number;
+    Wert: number;
+    Wertart: "Grenzwertsteuersatz";
+  }[] {
     const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#parameter;
     return [
-      { zvE: E0, Grenzwert: sg1 },
-      { zvE: E1, Grenzwert: sg2 },
-      { zvE: E2, Grenzwert: sg3 },
-      { zvE: E3, Grenzwert: sg4 },
+      { zvE: E0, Wert: sg1, Wertart: "Grenzwertsteuersatz" },
+      { zvE: E1, Wert: sg2, Wertart: "Grenzwertsteuersatz" },
+      { zvE: E2, Wert: sg3, Wertart: "Grenzwertsteuersatz" },
+      { zvE: E3, Wert: sg4, Wertart: "Grenzwertsteuersatz" },
     ];
   }
 
-  eckwerte_grenzsteuersätze_hilfe(): { zvE: number; Grenzwert: number }[] {
+  /**
+   * Liste mehr zvE und Grenzsteuersatz für Plot
+   *
+   * - zusätzliche Punkte für horizontale und vertikale Linien im Plot
+   *
+   * @returns Array der zvE und Grenzsteuersätze
+   */
+  grenzsteuersatz_data_extended(buffer = 100_000): {
+    zvE: number;
+    Wert: number;
+    Wertart: "Grenzwertsteuersatz";
+  }[] {
     const { E0, E3, sg3, sg4 } = this.#parameter;
-    return [
-      { zvE: 0, Grenzwert: 0 },
-      { zvE: E0, Grenzwert: 0 },
-      { zvE: E3, Grenzwert: sg3 },
-      { zvE: E3 + 10000, Grenzwert: sg4 },
+
+    const points = this.grenzsteuersatz_data();
+
+    const additional_points: {
+      zvE: number;
+      Wert: number;
+      Wertart: "Grenzwertsteuersatz";
+    }[] = [
+      { zvE: 0, Wert: 0, Wertart: "Grenzwertsteuersatz" },
+      { zvE: E0, Wert: 0, Wertart: "Grenzwertsteuersatz" },
+      { zvE: E3, Wert: sg3, Wertart: "Grenzwertsteuersatz" },
+      { zvE: E3 + buffer, Wert: sg4, Wertart: "Grenzwertsteuersatz" },
     ];
+
+    // beware: first `additional_points` then concatenate `points` to keep same `zvE`s in correct order
+    return additional_points
+      .concat(points)
+      .sort((a, b) => a.zvE - b.zvE);
   }
 }
