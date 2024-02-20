@@ -1,16 +1,19 @@
 import { range } from "d3";
+import { Inflation } from "@vwkd/inflation";
 import type { Parameter } from "./types.ts";
 
 export class Steuer {
   #parameter: Parameter;
+  #inflation: Inflation;
 
   /**
    * Berechne Steuer für Jahr
    *
    * @param parameter Parameter für Jahr
    */
-  constructor(parameter: Parameter) {
+  constructor(parameter: Parameter, inflation: Inflation) {
     this.#parameter = parameter;
+    this.#inflation = inflation;
   }
 
   /**
@@ -26,7 +29,7 @@ export class Steuer {
    * Liste Eckwerte des zvE
    *
    * - Merke: Eckwerte sind "bis", nicht "ab"
-   * @returns Array der Eckwerte des zvE
+   * @returns Liste der Eckwerte des zvE
    */
   eckwerte(): number[] {
     const { E0, E1, E2, E3 } = this.#parameter;
@@ -36,7 +39,7 @@ export class Steuer {
   /**
    * Liste anfängliche Grenzsteuersätze
    *
-   * @returns Array der anfänglichen Grenzsteuersätze
+   * @returns Liste der anfänglichen Grenzsteuersätze
    */
   grenzsteuersätze(): number[] {
     const { sg1, sg2, sg3, sg4 } = this.#parameter;
@@ -152,14 +155,82 @@ export class Steuer {
   }
 
   /**
-   * Liste zvE und Durchschnittssteuersatz für Plot
+   * Sample nominalen Steuerbetrag
    *
-   * @returns Array der zvE und Durschnittssteuersätze
+   * @param buffer Extra zvE-Distanz nach letztem zvE
+   * @param steps Anzahl der Samples
+   * @returns Liste der zvE und nominalen Steuerbeträge
+   */
+  steuerbetrag_data(buffer = 100_000, steps = 1000): {
+    zvE: number;
+    Wert: number;
+    Wertart: "Nominalwert";
+  }[] {
+    const { E3 } = this.#parameter;
+
+    const start = 0;
+    const end = E3 + buffer;
+    const step = (end - start) / steps;
+
+    return range(start, end, step)
+      .map((zvE) => ({
+        zvE: zvE,
+        Wert: this.steuerbetrag(zvE),
+        Wertart: "Nominalwert",
+      }));
+  }
+
+  /**
+   * Sample realen Steuerbetrag
+   *
+   * @param baseyear Basisjahr für Realwert, größer gleich Jahr
+   * @param buffer Extra zvE-Distanz nach letztem zvE
+   * @param steps Anzahl der Samples
+   * @returns Liste der zvE und realen Steuerbeträge
+   */
+  steuerbetrag_real_data<Y extends number>(
+    baseyear: Y,
+    buffer = 100_000,
+    steps = 1000,
+  ): {
+    zvE: number;
+    Wert: number;
+    Wertart: `Realwert ${Y}`;
+  }[] {
+    const { E3 } = this.#parameter;
+    const year = this.#parameter.Jahr;
+
+    if (year > baseyear) {
+      throw new Error(
+        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+      );
+    }
+
+    const start = 0;
+    const end = E3 + buffer;
+    const step = (end - start) / steps;
+
+    return range(start, end, step)
+      .map((zvE) => ({
+        zvE: this.#inflation.adjust(zvE, year, baseyear),
+        Wert: this.#inflation.adjust(this.steuerbetrag(zvE), year, baseyear),
+        Wertart: `Realwert (${baseyear})`,
+      }))
+      // note: cut off after last nominal zvE since larger real zvEs extend plot to the right
+      .filter(({ zvE }) => zvE <= end);
+  }
+
+  /**
+   * Sample nominalen Durchschnittssteuersatz
+   *
+   * @param buffer Extra zvE-Distanz nach letztem zvE
+   * @param steps Anzahl der Samples
+   * @returns Liste der zvE und nominalen Durchschnittssteuersätze
    */
   steuersatz_data(buffer = 100_000, steps = 1000): {
     zvE: number;
     Wert: number;
-    Wertart: "Durchschnittssteuersatz";
+    Wertart: "Nominalwert";
   }[] {
     const { E3 } = this.#parameter;
 
@@ -171,43 +242,119 @@ export class Steuer {
       .map((zvE) => ({
         zvE: zvE,
         Wert: this.steuersatz(zvE),
-        Wertart: "Durchschnittssteuersatz",
+        Wertart: "Nominalwert",
       }));
   }
 
   /**
-   * Liste zvE und Grenzsteuersatz für Plot
+   * Sample realen Durchschnittssteuersatz
+   *
+   * @param baseyear Basisjahr für Realwert, größer gleich Jahr
+   * @param buffer Extra zvE-Distanz nach letztem zvE
+   * @param steps Anzahl der Samples
+   * @returns Liste der zvE und realen Durchschnittssteuersätze
+   */
+  steuersatz_real_data<Y extends number>(
+    baseyear: Y,
+    buffer = 100_000,
+    steps = 1000,
+  ): {
+    zvE: number;
+    Wert: number;
+    Wertart: `Realwert ${Y}`;
+  }[] {
+    const { E3 } = this.#parameter;
+    const year = this.#parameter.Jahr;
+
+    if (year > baseyear) {
+      throw new Error(
+        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+      );
+    }
+
+    const start = 0;
+    const end = E3 + buffer;
+    const step = (end - start) / steps;
+
+    return range(start, end, step)
+      .map((zvE) => ({
+        zvE: this.#inflation.adjust(zvE, year, baseyear),
+        Wert: this.steuersatz(zvE),
+        Wertart: `Realwert (${baseyear})`,
+      }))
+      // note: cut off after last nominal zvE since larger real zvEs extend plot to the right
+      .filter(({ zvE }) => zvE <= end);
+  }
+
+  /**
+   * Sample nominalen Grenzsteuersatz
    *
    * - nur Eckwerte des zvE und anfängliche Grenzsteuersätze
-   * - besserer Plot als `grenzsteuersatz` Funktion
+   * - genauerer und effizienterer Plot als `grenzsteuersatz` Funktion
    *
-   * @returns Array der zvE und Grenzsteuersätze
+   * @returns Liste der zvE und nominalen Grenzsteuersätze
    */
   grenzsteuersatz_data(): {
     zvE: number;
     Wert: number;
-    Wertart: "Grenzwertsteuersatz";
+    Wertart: "Nominalwert";
   }[] {
     const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#parameter;
     return [
-      { zvE: E0, Wert: sg1, Wertart: "Grenzwertsteuersatz" },
-      { zvE: E1, Wert: sg2, Wertart: "Grenzwertsteuersatz" },
-      { zvE: E2, Wert: sg3, Wertart: "Grenzwertsteuersatz" },
-      { zvE: E3, Wert: sg4, Wertart: "Grenzwertsteuersatz" },
+      { zvE: E0, Wert: sg1, Wertart: "Nominalwert" },
+      { zvE: E1, Wert: sg2, Wertart: "Nominalwert" },
+      { zvE: E2, Wert: sg3, Wertart: "Nominalwert" },
+      { zvE: E3, Wert: sg4, Wertart: "Nominalwert" },
     ];
   }
 
   /**
-   * Liste mehr zvE und Grenzsteuersatz für Plot
+   * Sample realen Grenzsteuersatz
+   *
+   * - nur Eckwerte des zvE und anfängliche Grenzsteuersätze
+   * - genauerer und effizienterer Plot als `grenzsteuersatz` Funktion
+   *
+   * @param baseyear Basisjahr für Realwert, größer gleich Jahr
+   * @returns Liste der zvE und realen Grenzsteuersätze
+   */
+  grenzsteuersatz_real_data<Y extends number>(
+    baseyear: Y,
+  ): {
+    zvE: number;
+    Wert: number;
+    Wertart: `Realwert ${Y}`;
+  }[] {
+    const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#parameter;
+    const year = this.#parameter.Jahr;
+
+    if (year > baseyear) {
+      throw new Error(
+        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+      );
+    }
+
+    const Wertart = `Realwert (${baseyear})`;
+
+    return [
+      { zvE: this.#inflation.adjust(E0, year, baseyear), Wert: sg1, Wertart },
+      { zvE: this.#inflation.adjust(E1, year, baseyear), Wert: sg2, Wertart },
+      { zvE: this.#inflation.adjust(E2, year, baseyear), Wert: sg3, Wertart },
+      { zvE: this.#inflation.adjust(E3, year, baseyear), Wert: sg4, Wertart },
+    ];
+  }
+
+  /**
+   * Sample mehr nominalen Grenzsteuersatz
    *
    * - zusätzliche Punkte für horizontale und vertikale Linien im Plot
    *
-   * @returns Array der zvE und Grenzsteuersätze
+   * @param buffer Extra zvE-Distanz nach letztem zvE
+   * @returns Liste der zvE und nominalen Grenzsteuersätze
    */
   grenzsteuersatz_data_extended(buffer = 100_000): {
     zvE: number;
     Wert: number;
-    Wertart: "Grenzwertsteuersatz";
+    Wertart: "Nominalwert";
   }[] {
     const { E0, E3, sg3, sg4 } = this.#parameter;
 
@@ -216,12 +363,63 @@ export class Steuer {
     const additional_points: {
       zvE: number;
       Wert: number;
-      Wertart: "Grenzwertsteuersatz";
+      Wertart: "Nominalwert";
     }[] = [
-      { zvE: 0, Wert: 0, Wertart: "Grenzwertsteuersatz" },
-      { zvE: E0, Wert: 0, Wertart: "Grenzwertsteuersatz" },
-      { zvE: E3, Wert: sg3, Wertart: "Grenzwertsteuersatz" },
-      { zvE: E3 + buffer, Wert: sg4, Wertart: "Grenzwertsteuersatz" },
+      { zvE: 0, Wert: 0, Wertart: "Nominalwert" },
+      { zvE: E0, Wert: 0, Wertart: "Nominalwert" },
+      { zvE: E3, Wert: sg3, Wertart: "Nominalwert" },
+      { zvE: E3 + buffer, Wert: sg4, Wertart: "Nominalwert" },
+    ];
+
+    // beware: first `additional_points` then concatenate `points` to keep same `zvE`s in correct order
+    return additional_points
+      .concat(points)
+      .sort((a, b) => a.zvE - b.zvE);
+  }
+
+  /**
+   * Sample mehr realen Grenzsteuersatz
+   *
+   * - zusätzliche Punkte für horizontale und vertikale Linien im Plot
+   *
+   * @param baseyear Basisjahr für Realwert, größer gleich Jahr
+   * @param buffer Extra zvE-Distanz nach letztem zvE
+   * @returns Liste der zvE und realen Grenzsteuersätze
+   */
+  grenzsteuersatz_real_data_extended<Y extends number>(
+    baseyear: Y,
+    buffer = 100_000,
+  ): {
+    zvE: number;
+    Wert: number;
+    Wertart: `Realwert ${Y}`;
+  }[] {
+    const { E0, E3, sg3, sg4 } = this.#parameter;
+    const year = this.#parameter.Jahr;
+
+    if (year > baseyear) {
+      throw new Error(
+        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+      );
+    }
+
+    const points = this.grenzsteuersatz_real_data(baseyear);
+
+    const Wertart = `Realwert (${baseyear})`;
+
+    const additional_points: {
+      zvE: number;
+      Wert: number;
+      Wertart: `Realwert ${Y}`;
+    }[] = [
+      { zvE: this.#inflation.adjust(0, year, baseyear), Wert: 0, Wertart },
+      { zvE: this.#inflation.adjust(E0, year, baseyear), Wert: 0, Wertart },
+      { zvE: this.#inflation.adjust(E3, year, baseyear), Wert: sg3, Wertart },
+      {
+        zvE: this.#inflation.adjust(E3, year, baseyear) + buffer,
+        Wert: sg4,
+        Wertart,
+      },
     ];
 
     // beware: first `additional_points` then concatenate `points` to keep same `zvE`s in correct order
