@@ -2,7 +2,13 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "jsr:@vwkd/inflation@^0.0.3": "jsr:@vwkd/inflation@0.0.3",
       "npm:d3@^7.8.5": "npm:d3@7.8.5_d3-selection@3.0.0"
+    },
+    "jsr": {
+      "@vwkd/inflation@0.0.3": {
+        "integrity": "9083f6a6d541f476ff521d62696a3a71ea3b038b3117178de7077377fa9c9c72"
+      }
     },
     "npm": {
       "commander@7.2.0": {
@@ -256,6 +262,7 @@
   "remote": {},
   "workspace": {
     "dependencies": [
+      "jsr:@vwkd/inflation@^0.0.3",
       "npm:d3@^7.8.5"
     ]
   }
