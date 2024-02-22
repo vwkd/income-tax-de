@@ -415,11 +415,8 @@ export class Steuer {
       { zvE: this.#inflation.adjust(0, year, baseyear), Wert: 0, Wertart },
       { zvE: this.#inflation.adjust(E0, year, baseyear), Wert: 0, Wertart },
       { zvE: this.#inflation.adjust(E3, year, baseyear), Wert: sg3, Wertart },
-      {
-        zvE: this.#inflation.adjust(E3, year, baseyear) + buffer,
-        Wert: sg4,
-        Wertart,
-      },
+      // note: use nominal since larger real zvEs would extend plot to the right, doesn't affect plot since just endpoint
+      { zvE: E3 + buffer, Wert: sg4, Wertart },
     ];
 
     // beware: first `additional_points` then concatenate `points` to keep same `zvE`s in correct order
