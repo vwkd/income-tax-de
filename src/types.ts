@@ -59,3 +59,9 @@ export interface Parameter {
    */
   sg4: number;
 }
+
+export interface Point {
+  zvE: number;
+  Wert: number;
+  Wertart: string;
+}
