@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/d3@7"
 import { range } from "d3";
 import { Inflation } from "@vwkd/inflation";
 
@@ -61,6 +62,12 @@ export interface Params {
    * Anfänglicher Grenzsteuersatz in Zone 4
    */
   sg4: number;
+}
+
+export interface Point {
+  zvE: number;
+  Wert: number;
+  Wertart: string;
 }
 
 export class Steuer {
@@ -217,11 +224,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der zvE und nominalen Steuerbeträge
    */
-  steuerbetrag_data(start = 0, end = 350_000, steps = 1000): {
-    zvE: number;
-    Wert: number;
-    Wertart: "Nominalwert";
-  }[] {
+  steuerbetrag_data(start = 0, end = 350_000, steps = 1000): Point[] {
     const { E0, E3 } = this.#params;
 
     if (start < 0) {
@@ -259,16 +262,12 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der realen zvE und realen Steuerbeträge
    */
-  steuerbetrag_real_data<Y extends number>(
-    baseyear: Y,
+  steuerbetrag_real_data(
+    baseyear: number,
     start = 0,
     end = 350_000,
     steps = 1000,
-  ): {
-    zvE: number;
-    Wert: number;
-    Wertart: `Realwert ${Y}`;
-  }[] {
+  ): Point[] {
     const { E0, E3 } = this.#params;
     const year = this.#params.Jahr;
 
@@ -314,11 +313,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der zvE und nominalen Durchschnittssteuersätze
    */
-  steuersatz_data(start = 0, end = 350_000, steps = 1000): {
-    zvE: number;
-    Wert: number;
-    Wertart: "Nominalwert";
-  }[] {
+  steuersatz_data(start = 0, end = 350_000, steps = 1000): Point[] {
     const { E0, E3 } = this.#params;
 
     if (start < 0) {
@@ -356,16 +351,12 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der realen zvE und realen Durchschnittssteuersätze
    */
-  steuersatz_real_data<Y extends number>(
-    baseyear: Y,
+  steuersatz_real_data(
+    baseyear: number,
     start = 0,
     end = 350_000,
     steps = 1000,
-  ): {
-    zvE: number;
-    Wert: number;
-    Wertart: `Realwert ${Y}`;
-  }[] {
+  ): Point[] {
     const { E0, E3 } = this.#params;
     const year = this.#params.Jahr;
 
@@ -411,11 +402,7 @@ export class Steuer {
    *
    * @returns Liste der zvE und nominalen Grenzsteuersätze
    */
-  grenzsteuersatz_data(): {
-    zvE: number;
-    Wert: number;
-    Wertart: "Nominalwert";
-  }[] {
+  grenzsteuersatz_data(): Point[] {
     const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#params;
     return [
       { zvE: E0, Wert: sg1, Wertart: "Nominalwert" },
@@ -434,13 +421,9 @@ export class Steuer {
    * @param baseyear Basisjahr für Realwert, größer gleich Jahr
    * @returns Liste der realen zvE und realen Grenzsteuersätze
    */
-  grenzsteuersatz_real_data<Y extends number>(
-    baseyear: Y,
-  ): {
-    zvE: number;
-    Wert: number;
-    Wertart: `Realwert ${Y}`;
-  }[] {
+  grenzsteuersatz_real_data(
+    baseyear: number,
+  ): Point[] {
     const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#params;
     const year = this.#params.Jahr;
 
@@ -468,11 +451,7 @@ export class Steuer {
    * @param end Maximum zvE, größer gleich letztem Eckwert des zvE in Zone 3
    * @returns Liste der zvE und nominalen Grenzsteuersätze
    */
-  grenzsteuersatz_data_extended(end = 350_000): {
-    zvE: number;
-    Wert: number;
-    Wertart: "Nominalwert";
-  }[] {
+  grenzsteuersatz_data_extended(end = 350_000): Point[] {
     const { E0, E3, sg3, sg4 } = this.#params;
 
     if (end < E3) {
@@ -483,11 +462,7 @@ export class Steuer {
 
     const points = this.grenzsteuersatz_data();
 
-    const additional_points: {
-      zvE: number;
-      Wert: number;
-      Wertart: "Nominalwert";
-    }[] = [
+    const additional_points: Point[] = [
       { zvE: 0, Wert: 0, Wertart: "Nominalwert" },
       { zvE: E0, Wert: 0, Wertart: "Nominalwert" },
       { zvE: E3, Wert: sg3, Wertart: "Nominalwert" },
@@ -509,14 +484,10 @@ export class Steuer {
    * @param end Maximum zvE, größer gleich letztem Eckwert des zvE in Zone 3
    * @returns Liste der realen zvE und realen Grenzsteuersätze
    */
-  grenzsteuersatz_real_data_extended<Y extends number>(
-    baseyear: Y,
+  grenzsteuersatz_real_data_extended(
+    baseyear: number,
     end = 350_000,
-  ): {
-    zvE: number;
-    Wert: number;
-    Wertart: `Realwert ${Y}`;
-  }[] {
+  ): Point[] {
     const { E0, E3, sg3, sg4 } = this.#params;
     const year = this.#params.Jahr;
 
@@ -536,11 +507,7 @@ export class Steuer {
 
     const Wertart = `Realwert (${baseyear})`;
 
-    const additional_points: {
-      zvE: number;
-      Wert: number;
-      Wertart: `Realwert ${Y}`;
-    }[] = [
+    const additional_points: Point[] = [
       { zvE: this.#inflation.adjust(0, year, baseyear), Wert: 0, Wertart },
       { zvE: this.#inflation.adjust(E0, year, baseyear), Wert: 0, Wertart },
       { zvE: this.#inflation.adjust(E3, year, baseyear), Wert: sg3, Wertart },
