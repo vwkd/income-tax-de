@@ -68,6 +68,7 @@ export interface Point {
   zvE: number;
   Wert: number;
   Wertart: string;
+  Jahr: number;
 }
 
 export class Steuer {
@@ -225,7 +226,7 @@ export class Steuer {
    * @returns Liste der zvE und nominalen Steuerbeträge
    */
   steuerbetrag_data(start = 0, end = 350_000, steps = 1000): Point[] {
-    const { E0, E3 } = this.#params;
+    const { E0, E3, Jahr } = this.#params;
 
     if (start < 0) {
       throw new Error(`Start '${start}' must be greater or equal to 0`);
@@ -250,6 +251,7 @@ export class Steuer {
         zvE: zvE,
         Wert: this.steuerbetrag(zvE),
         Wertart: "Nominalwert",
+        Jahr,
       }));
   }
 
@@ -268,12 +270,11 @@ export class Steuer {
     end = 350_000,
     steps = 1000,
   ): Point[] {
-    const { E0, E3 } = this.#params;
-    const year = this.#params.Jahr;
+    const { E0, E3, Jahr } = this.#params;
 
-    if (year > baseyear) {
+    if (Jahr > baseyear) {
       throw new Error(
-        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+        `Base year '${baseyear}' must be greater or equal to year '${Jahr}'`,
       );
     }
 
@@ -297,9 +298,10 @@ export class Steuer {
 
     return range(start, end, step)
       .map((zvE) => ({
-        zvE: this.#inflation.adjust(zvE, year, baseyear),
-        Wert: this.#inflation.adjust(this.steuerbetrag(zvE), year, baseyear),
+        zvE: this.#inflation.adjust(zvE, Jahr, baseyear),
+        Wert: this.#inflation.adjust(this.steuerbetrag(zvE), Jahr, baseyear),
         Wertart: `Realwert (${baseyear})`,
+        Jahr,
       }))
       // note: cut off after last nominal zvE since larger real zvEs extend plot to the right
       .filter(({ zvE }) => zvE <= end);
@@ -314,7 +316,7 @@ export class Steuer {
    * @returns Liste der zvE und nominalen Durchschnittssteuersätze
    */
   steuersatz_data(start = 0, end = 350_000, steps = 1000): Point[] {
-    const { E0, E3 } = this.#params;
+    const { E0, E3, Jahr } = this.#params;
 
     if (start < 0) {
       throw new Error(`Start '${start}' must be greater or equal to 0`);
@@ -339,6 +341,7 @@ export class Steuer {
         zvE: zvE,
         Wert: this.steuersatz(zvE),
         Wertart: "Nominalwert",
+        Jahr,
       }));
   }
 
@@ -357,12 +360,11 @@ export class Steuer {
     end = 350_000,
     steps = 1000,
   ): Point[] {
-    const { E0, E3 } = this.#params;
-    const year = this.#params.Jahr;
+    const { E0, E3, Jahr } = this.#params;
 
-    if (year > baseyear) {
+    if (Jahr > baseyear) {
       throw new Error(
-        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+        `Base year '${baseyear}' must be greater or equal to year '${Jahr}'`,
       );
     }
 
@@ -386,9 +388,10 @@ export class Steuer {
 
     return range(start, end, step)
       .map((zvE) => ({
-        zvE: this.#inflation.adjust(zvE, year, baseyear),
+        zvE: this.#inflation.adjust(zvE, Jahr, baseyear),
         Wert: this.steuersatz(zvE),
         Wertart: `Realwert (${baseyear})`,
+        Jahr,
       }))
       // note: cut off after last nominal zvE since larger real zvEs extend plot to the right
       .filter(({ zvE }) => zvE <= end);
@@ -403,12 +406,12 @@ export class Steuer {
    * @returns Liste der zvE und nominalen Grenzsteuersätze
    */
   grenzsteuersatz_data(): Point[] {
-    const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#params;
+    const { E0, E1, E2, E3, sg1, sg2, sg3, sg4, Jahr } = this.#params;
     return [
-      { zvE: E0, Wert: sg1, Wertart: "Nominalwert" },
-      { zvE: E1, Wert: sg2, Wertart: "Nominalwert" },
-      { zvE: E2, Wert: sg3, Wertart: "Nominalwert" },
-      { zvE: E3, Wert: sg4, Wertart: "Nominalwert" },
+      { zvE: E0, Wert: sg1, Wertart: "Nominalwert", Jahr },
+      { zvE: E1, Wert: sg2, Wertart: "Nominalwert", Jahr },
+      { zvE: E2, Wert: sg3, Wertart: "Nominalwert", Jahr },
+      { zvE: E3, Wert: sg4, Wertart: "Nominalwert", Jahr },
     ];
   }
 
@@ -424,22 +427,41 @@ export class Steuer {
   grenzsteuersatz_real_data(
     baseyear: number,
   ): Point[] {
-    const { E0, E1, E2, E3, sg1, sg2, sg3, sg4 } = this.#params;
-    const year = this.#params.Jahr;
+    const { E0, E1, E2, E3, sg1, sg2, sg3, sg4, Jahr } = this.#params;
 
-    if (year > baseyear) {
+    if (Jahr > baseyear) {
       throw new Error(
-        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+        `Base year '${baseyear}' must be greater or equal to year '${Jahr}'`,
       );
     }
 
     const Wertart = `Realwert (${baseyear})`;
 
     return [
-      { zvE: this.#inflation.adjust(E0, year, baseyear), Wert: sg1, Wertart },
-      { zvE: this.#inflation.adjust(E1, year, baseyear), Wert: sg2, Wertart },
-      { zvE: this.#inflation.adjust(E2, year, baseyear), Wert: sg3, Wertart },
-      { zvE: this.#inflation.adjust(E3, year, baseyear), Wert: sg4, Wertart },
+      {
+        zvE: this.#inflation.adjust(E0, Jahr, baseyear),
+        Wert: sg1,
+        Wertart,
+        Jahr,
+      },
+      {
+        zvE: this.#inflation.adjust(E1, Jahr, baseyear),
+        Wert: sg2,
+        Wertart,
+        Jahr,
+      },
+      {
+        zvE: this.#inflation.adjust(E2, Jahr, baseyear),
+        Wert: sg3,
+        Wertart,
+        Jahr,
+      },
+      {
+        zvE: this.#inflation.adjust(E3, Jahr, baseyear),
+        Wert: sg4,
+        Wertart,
+        Jahr,
+      },
     ];
   }
 
@@ -452,7 +474,7 @@ export class Steuer {
    * @returns Liste der zvE und nominalen Grenzsteuersätze
    */
   grenzsteuersatz_data_extended(end = 350_000): Point[] {
-    const { E0, E3, sg3, sg4 } = this.#params;
+    const { E0, E3, sg3, sg4, Jahr } = this.#params;
 
     if (end < E3) {
       throw new Error(
@@ -463,10 +485,10 @@ export class Steuer {
     const points = this.grenzsteuersatz_data();
 
     const additional_points: Point[] = [
-      { zvE: 0, Wert: 0, Wertart: "Nominalwert" },
-      { zvE: E0, Wert: 0, Wertart: "Nominalwert" },
-      { zvE: E3, Wert: sg3, Wertart: "Nominalwert" },
-      { zvE: end, Wert: sg4, Wertart: "Nominalwert" },
+      { zvE: 0, Wert: 0, Wertart: "Nominalwert", Jahr },
+      { zvE: E0, Wert: 0, Wertart: "Nominalwert", Jahr },
+      { zvE: E3, Wert: sg3, Wertart: "Nominalwert", Jahr },
+      { zvE: end, Wert: sg4, Wertart: "Nominalwert", Jahr },
     ];
 
     // beware: first `additional_points` then concatenate `points` to keep same `zvE`s in correct order
@@ -488,12 +510,11 @@ export class Steuer {
     baseyear: number,
     end = 350_000,
   ): Point[] {
-    const { E0, E3, sg3, sg4 } = this.#params;
-    const year = this.#params.Jahr;
+    const { E0, E3, sg3, sg4, Jahr } = this.#params;
 
-    if (year > baseyear) {
+    if (Jahr > baseyear) {
       throw new Error(
-        `Base year '${baseyear}' must be greater or equal to year '${year}'`,
+        `Base year '${baseyear}' must be greater or equal to year '${Jahr}'`,
       );
     }
 
@@ -508,12 +529,27 @@ export class Steuer {
     const Wertart = `Realwert (${baseyear})`;
 
     const additional_points: Point[] = [
-      { zvE: this.#inflation.adjust(0, year, baseyear), Wert: 0, Wertart },
-      { zvE: this.#inflation.adjust(E0, year, baseyear), Wert: 0, Wertart },
-      { zvE: this.#inflation.adjust(E3, year, baseyear), Wert: sg3, Wertart },
+      {
+        zvE: this.#inflation.adjust(0, Jahr, baseyear),
+        Wert: 0,
+        Wertart,
+        Jahr,
+      },
+      {
+        zvE: this.#inflation.adjust(E0, Jahr, baseyear),
+        Wert: 0,
+        Wertart,
+        Jahr,
+      },
+      {
+        zvE: this.#inflation.adjust(E3, Jahr, baseyear),
+        Wert: sg3,
+        Wertart,
+        Jahr,
+      },
       // note: use nominal since larger real zvEs would extend plot to the right, doesn't affect plot since just endpoint
       // todo: what if real E3 is larger than end?
-      { zvE: end, Wert: sg4, Wertart },
+      { zvE: end, Wert: sg4, Wertart, Jahr },
     ];
 
     // beware: first `additional_points` then concatenate `points` to keep same `zvE`s in correct order
