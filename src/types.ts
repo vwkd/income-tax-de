@@ -64,4 +64,5 @@ export interface Point {
   zvE: number;
   Wert: number;
   Wertart: string;
+  Jahr: number;
 }
