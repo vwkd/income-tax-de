@@ -270,7 +270,7 @@ export class Steuer {
     end = 350_000,
     steps = 1000,
   ): Point[] {
-    const { E0, E3, Jahr } = this.#params;
+    const { Jahr } = this.#params;
 
     if (Jahr > baseyear) {
       throw new Error(
@@ -278,31 +278,14 @@ export class Steuer {
       );
     }
 
-    if (start < 0) {
-      throw new Error(`Start '${start}' must be greater or equal to 0`);
-    }
+    const sb = this.steuerbetrag_data(start, end, steps);
 
-    if (start > E0) {
-      throw new Error(
-        `Start '${start}' must be less or equal to E0 '${E0}'`,
-      );
-    }
-
-    if (end < E3) {
-      throw new Error(
-        `End '${end}' must be greater or equal to E3 '${E3}'`,
-      );
-    }
-
-    const step = (end - start) / steps;
-
-    return range(start, end, step)
-      .map((zvE) => ({
-        zvE: this.#inflation.adjust(zvE, Jahr, baseyear),
-        Wert: this.#inflation.adjust(this.steuerbetrag(zvE), Jahr, baseyear),
-        Wertart: `Realwert (${baseyear})`,
-        Jahr,
-      }))
+    return sb.map((point) => ({
+      ...point,
+      zvE: this.#inflation.adjust(point.zvE, Jahr, baseyear),
+      Wert: this.#inflation.adjust(point.Wert, Jahr, baseyear),
+      Wertart: `Realwert (${baseyear})`,
+    }))
       // note: cut off after last nominal zvE since larger real zvEs extend plot to the right
       .filter(({ zvE }) => zvE <= end);
   }
@@ -360,7 +343,7 @@ export class Steuer {
     end = 350_000,
     steps = 1000,
   ): Point[] {
-    const { E0, E3, Jahr } = this.#params;
+    const { Jahr } = this.#params;
 
     if (Jahr > baseyear) {
       throw new Error(
@@ -368,31 +351,13 @@ export class Steuer {
       );
     }
 
-    if (start < 0) {
-      throw new Error(`Start '${start}' must be greater or equal to 0`);
-    }
+    const sd = this.steuersatz_data(start, end, steps);
 
-    if (start > E0) {
-      throw new Error(
-        `Start '${start}' must be less or equal to E0 '${E0}'`,
-      );
-    }
-
-    if (end < E3) {
-      throw new Error(
-        `End '${end}' must be greater or equal to E3 '${E3}'`,
-      );
-    }
-
-    const step = (end - start) / steps;
-
-    return range(start, end, step)
-      .map((zvE) => ({
-        zvE: this.#inflation.adjust(zvE, Jahr, baseyear),
-        Wert: this.steuersatz(zvE),
-        Wertart: `Realwert (${baseyear})`,
-        Jahr,
-      }))
+    return sd.map((point) => ({
+      ...point,
+      zvE: this.#inflation.adjust(point.zvE, Jahr, baseyear),
+      Wertart: `Realwert (${baseyear})`,
+    }))
       // note: cut off after last nominal zvE since larger real zvEs extend plot to the right
       .filter(({ zvE }) => zvE <= end);
   }
