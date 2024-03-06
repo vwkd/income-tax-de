@@ -2,6 +2,8 @@
 import { range } from "d3";
 import { Inflation } from "@vwkd/inflation";
 
+export { grundfreibetrag, steuerbetrag } from "./data.ts";
+
 /**
  * Parameter um Steuerbetrag zu berechnen
  */
