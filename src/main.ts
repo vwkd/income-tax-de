@@ -3,6 +3,9 @@ import { range } from "d3";
 import { Inflation } from "@vwkd/inflation";
 import type { Parameter, Point } from "./types.ts";
 
+export { values } from "./data/grundfreibetrag.ts";
+export { parameters } from "./data/steuerbetrag.ts";
+
 export class Steuer {
   #parameter: Parameter;
   #inflation: Inflation;
