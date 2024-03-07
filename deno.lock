@@ -2,11 +2,22 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "jsr:@std/assert@^0.218.2": "jsr:@std/assert@0.218.2",
+      "jsr:@std/fmt@^0.218.2": "jsr:@std/fmt@0.218.2",
       "jsr:@vwkd/inflation@^0.0.3": "jsr:@vwkd/inflation@0.0.3",
       "npm:@types/d3@7": "npm:@types/d3@7.4.3",
       "npm:d3@^7.8.5": "npm:d3@7.8.5_d3-selection@3.0.0"
     },
     "jsr": {
+      "@std/assert@0.218.2": {
+        "integrity": "7f0a5a1a8cf86607cd6c2c030584096e1ffad27fc9271429a8cb48cfbdee5eaf",
+        "dependencies": [
+          "jsr:@std/fmt@^0.218.2"
+        ]
+      },
+      "@std/fmt@0.218.2": {
+        "integrity": "99526449d2505aa758b6cbef81e7dd471d8b28ec0dcb1491d122b284c548788a"
+      },
       "@vwkd/inflation@0.0.3": {
         "integrity": "9083f6a6d541f476ff521d62696a3a71ea3b038b3117178de7077377fa9c9c72"
       }
@@ -446,6 +457,7 @@
   "remote": {},
   "workspace": {
     "dependencies": [
+      "jsr:@std/assert@^0.218.2",
       "jsr:@vwkd/inflation@^0.0.3",
       "npm:d3@^7.8.5"
     ]
