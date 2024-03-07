@@ -60,6 +60,9 @@ export interface Parameter {
   sg4: number;
 }
 
+/**
+ * Punkt für Plot
+ */
 export interface Point {
   zvE: number;
   Wert: number;
