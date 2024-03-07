@@ -1,4 +1,8 @@
-// Quelle: https://de.wikipedia.org/wiki/Grundfreibetrag_(Deutschland)
+/**
+ * Punkte für Grundfreibetrag
+ *
+ * Quelle: https://de.wikipedia.org/wiki/Grundfreibetrag_(Deutschland)
+ */
 export const values = [
   {
     "Jahr": 2002,

@@ -6,12 +6,15 @@ import type { Parameter, Point } from "./types.ts";
 export { values } from "./data/grundfreibetrag.ts";
 export { parameters } from "./data/steuerbetrag.ts";
 
+/**
+ * Einkommensteuerrechner für Deutschland
+ */
 export class Steuer {
   #parameter: Parameter;
   #inflation: Inflation;
 
   /**
-   * Berechne Steuer für Jahr
+   * Erstelle Einkommensteuerrechner für Jahr
    *
    * @param parameter Parameter für Jahr
    */

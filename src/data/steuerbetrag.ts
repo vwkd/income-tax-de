@@ -1,6 +1,10 @@
 import type { Parameter } from "../types.ts";
 
-// Quelle: https://de.wikipedia.org/wiki/Tarifgeschichte_der_Einkommensteuer_in_Deutschland#Seit_2007
+/**
+ * Parameter für Einkommensteuerrechner
+ *
+ * Quelle: https://de.wikipedia.org/wiki/Tarifgeschichte_der_Einkommensteuer_in_Deutschland#Seit_2007
+ */
 export const parameters: Parameter[] = [
   {
     "Jahr": 2007,
