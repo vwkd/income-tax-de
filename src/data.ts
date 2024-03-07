@@ -1,6 +1,10 @@
 import { Params } from "./mod.ts";
 
-// Quelle: https://de.wikipedia.org/wiki/Grundfreibetrag_(Deutschland)
+/**
+ * Punkte für Grundfreibetrag
+ *
+ * Quelle: https://de.wikipedia.org/wiki/Grundfreibetrag_(Deutschland)
+ */
 export const grundfreibetrag = [
   {
     "Jahr": 2002,
@@ -119,7 +123,11 @@ export const grundfreibetrag = [
   },
 ];
 
-// Quelle: https://de.wikipedia.org/wiki/Tarifgeschichte_der_Einkommensteuer_in_Deutschland#Seit_2007
+/**
+ * Parameter für Einkommensteuerrechner
+ *
+ * Quelle: https://de.wikipedia.org/wiki/Tarifgeschichte_der_Einkommensteuer_in_Deutschland#Seit_2007
+ */
 export const steuerbetrag: Params[] = [
   {
     "Jahr": 2007,
