@@ -66,6 +66,9 @@ export interface Params {
   sg4: number;
 }
 
+/**
+ * Punkt für Plot
+ */
 export interface Point {
   zvE: number;
   Wert: number;
@@ -73,12 +76,15 @@ export interface Point {
   Jahr: number;
 }
 
+/**
+ * Einkommensteuerrechner für Deutschland
+ */
 export class Steuer {
   #params: Params;
   #inflation: Inflation;
 
   /**
-   * Berechne Steuer für Jahr
+   * Erstelle Einkommensteuerrechner für Jahr
    * @param param0 Parameter für Jahr
    */
   constructor(params: Params, inflation: Inflation) {
