@@ -63,9 +63,15 @@ export interface Parameter {
 /**
  * Punkt für Plot
  */
-export interface Point {
-  zvE: number;
-  Wert: number;
+export interface Point extends Value {
   Wertart: string;
+  zvE: number;
+}
+
+/**
+ * Wert
+ */
+export interface Value {
   Jahr: number;
+  Wert: number;
 }
