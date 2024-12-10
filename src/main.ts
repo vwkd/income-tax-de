@@ -5,6 +5,7 @@ import type { Parameter, Point } from "./types.ts";
 
 export { values } from "./data/grundfreibetrag.ts";
 export { parameters } from "./data/steuerbetrag.ts";
+export type { Parameter, Point, Value } from "./types.ts";
 
 /**
  * Einkommensteuerrechner für Deutschland
@@ -56,11 +57,11 @@ export class Steuer {
   /**
    * Berechne Steuerbetrag
    *
+   * - Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
+   * - note: nutzt "mathematisch gleichwertige Form" da Parameter dafür
    * @param zvE zu versteuerndes Einkommen
    * @returns Steuerbetrag
    */
-  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
-  // note: nutzt "mathematisch gleichwertige Form" da Parameter dafür
   steuerbetrag(zvE: number): number {
     if (zvE < 0) {
       throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
@@ -122,10 +123,10 @@ export class Steuer {
   /**
    * Berechne Grenzsteuersatz
    *
+   * - Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
    * @param zvE zu versteuerndes Einkommen
    * @returns Grenzsteuersatz
    */
-  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
   grenzsteuersatz(zvE: number): number {
     if (zvE < 0) {
       throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
