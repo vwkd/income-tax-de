@@ -1,80 +1,10 @@
 // @deno-types="npm:@types/d3@7"
 import { range } from "d3";
 import { Inflation } from "@vwkd/inflation";
+import type { Params, Point } from "./types.ts";
 
 export { grundfreibetrag, steuerbetrag } from "./data.ts";
-
-/**
- * Parameter um Steuerbetrag zu berechnen
- */
-export interface Params {
-  /**
-   * Jahr für das die Parameter gelten
-   */
-  Jahr: number;
-  /**
-   * Eckwert des zvE in Zone 0 (Grundfreibetrag)
-   */
-  E0: number;
-  /**
-   * Eckwert des zvE in Zone 1
-   */
-  E1: number;
-  /**
-   * Eckwert des zvE in Zone 2
-   */
-  E2: number;
-  /**
-   * Eckwert des zvE in Zone 3
-   */
-  E3: number;
-  /**
-   * Steuerbetrag an Eckwert in Zone 1
-   */
-  S1: number;
-  /**
-   * Steuerbetrag an Eckwert in Zone 2
-   */
-  S2: number;
-  /**
-   * Steuerbetrag an Eckwert in Zone 3
-   */
-  S3: number;
-  /**
-   * Linearer Progressionsfaktor in Zone 1
-   */
-  p1: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 1
-   */
-  sg1: number;
-  /**
-   * Linearer Progressionsfaktor in Zone 2
-   */
-  p2: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 2
-   */
-  sg2: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 3
-   */
-  sg3: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 4
-   */
-  sg4: number;
-}
-
-/**
- * Punkt für Plot
- */
-export interface Point {
-  zvE: number;
-  Wert: number;
-  Wertart: string;
-  Jahr: number;
-}
+export type { Params, Point, Value } from "./types.ts";
 
 /**
  * Einkommensteuerrechner für Deutschland
@@ -122,11 +52,12 @@ export class Steuer {
 
   /**
    * Berechne Steuerbetrag
+   *
+   * - Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
+   * - note: nutzt "mathematisch gleichwertige Form" da Parameter dafür
    * @param {number} zvE zu versteuerndes Einkommen
    * @returns {number} Steuerbetrag
    */
-  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
-  // note: nutzt "mathematisch gleichwertige Form" da Parameter dafür
   steuerbetrag(zvE: number): number {
     if (zvE < 0) {
       throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
@@ -186,10 +117,11 @@ export class Steuer {
 
   /**
    * Berechne Grenzsteuersatz
+   *
+   * - Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
    * @param {number} zvE zu versteuerndes Einkommen
    * @returns {number} Grenzsteuersatz
    */
-  // Quelle: https://de.wikipedia.org/wiki/Einkommensteuer_(Deutschland)#Mathematische_Eigenschaften_der_Steuerfunktion
   grenzsteuersatz(zvE: number): number {
     if (zvE < 0) {
       throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
