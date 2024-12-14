@@ -15,7 +15,7 @@ Einkommensteuerrechner für Deutschland
 ## Benutzung
 
 ```ts
-import { Steuer, parameters } from "@vwkd/income-tax-de";
+import { Steuer } from "@vwkd/income-tax-de";
 import { Inflation } from "@vwkd/inflation";
 import { currencyReplacements, inflationRates } from "@vwkd/inflation/de";
 
@@ -23,8 +23,7 @@ const jahr = 2020;
 const zvE = 14_533;
 
 const inflation = new Inflation(inflationRates, currencyReplacements);
-const parameter = parameters.find((s) => s.Jahr == jahr);
-const steuer = new Steuer(parameter, inflation);
+const steuer = new Steuer(jahr, inflation);
 
 console.log(steuer.steuerbetrag(zvE)); // 973.03
 console.log(steuer.steuersatz(zvE)); // 0.0669

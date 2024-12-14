@@ -1,39 +1,28 @@
-import { assertAlmostEquals, assertEquals } from "@std/assert";
-import { parameters } from "../src/data/steuerbetrag.ts";
+import { assertEquals } from "@std/assert";
+import { parameters } from "../src/data.ts";
 import { Steuer } from "../src/main.ts";
 import { Inflation } from "@vwkd/inflation";
 
-const TOLERANCE = 0.0001;
-
-const years = parameters.map((p) => p.Jahr);
+const years = parameters.flatMap(({ year }) =>
+  Array.isArray(year)
+    ? Array.from({ length: year[1] - year[0] + 1 }, (_, i) => year[0] + i)
+    : year
+);
 
 for (const year of years) {
   Deno.test(`${year}`, () => {
     const inflation = new Inflation({}, {});
-    const parameter = parameters.find((p) => p.Jahr == year)!;
-    const steuer = new Steuer(parameter, inflation);
+    const steuer = new Steuer(year, inflation);
+    const parameter = parameters.find(({ year: y }) =>
+      Array.isArray(y) ? y[0] <= year && year <= y[1] : y === year
+    )!;
 
-    assertEquals(steuer.grenzsteuersatz(0), 0);
-    assertEquals(steuer.grenzsteuersatz(parameter.E0), 0);
-    assertAlmostEquals(
-      steuer.grenzsteuersatz(parameter.E0 + 1),
-      parameter.sg1,
-      TOLERANCE,
-    );
-    assertAlmostEquals(
-      steuer.grenzsteuersatz(parameter.E1 + 1),
-      parameter.sg2,
-      TOLERANCE,
-    );
-    assertAlmostEquals(
-      steuer.grenzsteuersatz(parameter.E2 + 1),
-      parameter.sg3,
-      TOLERANCE,
-    );
-    assertAlmostEquals(
-      steuer.grenzsteuersatz(parameter.E3 + 1),
-      parameter.sg4,
-      TOLERANCE,
-    );
+    for (const { start, end: endMaybe, rateMargin } of parameter.pieces) {
+      const end = endMaybe === Infinity ? start + 1 : endMaybe;
+      const mid = (start + end) / 2;
+      assertEquals(steuer.grenzsteuersatz(start), rateMargin(start));
+      assertEquals(steuer.grenzsteuersatz(mid), rateMargin(mid));
+      assertEquals(steuer.grenzsteuersatz(end), rateMargin(end));
+    }
   });
 }

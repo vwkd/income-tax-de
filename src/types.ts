@@ -3,61 +3,35 @@
  */
 export interface Parameter {
   /**
-   * Jahr für das die Parameter gelten
+   * Jahr oder Intervall von Jahren für das die Parameter gelten
    */
-  Jahr: number;
+  year: number | [number, number];
   /**
-   * Eckwert des zvE in Zone 0 (Grundfreibetrag)
+   * Stück der Steuerbetragsfunktion
    */
-  E0: number;
+  pieces: Piece[];
+}
+
+/**
+ * Stück der Steuerbetragsfunktion
+ */
+export interface Piece {
   /**
-   * Eckwert des zvE in Zone 1
+   * Anfang des zvE
    */
-  E1: number;
+  start: number;
   /**
-   * Eckwert des zvE in Zone 2
+   * Ende des zvE
    */
-  E2: number;
+  end: number;
   /**
-   * Eckwert des zvE in Zone 3
+   * Steuerbetragsfunktion
    */
-  E3: number;
+  amount: (zvE: number) => number;
   /**
-   * Steuerbetrag an Eckwert in Zone 1
+   * Grenzsteuersatzfunktion
    */
-  S1: number;
-  /**
-   * Steuerbetrag an Eckwert in Zone 2
-   */
-  S2: number;
-  /**
-   * Steuerbetrag an Eckwert in Zone 3
-   */
-  S3: number;
-  /**
-   * Linearer Progressionsfaktor in Zone 1
-   */
-  p1: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 1
-   */
-  sg1: number;
-  /**
-   * Linearer Progressionsfaktor in Zone 2
-   */
-  p2: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 2
-   */
-  sg2: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 3
-   */
-  sg3: number;
-  /**
-   * Anfänglicher Grenzsteuersatz in Zone 4
-   */
-  sg4: number;
+  rateMargin: (zvE: number) => number;
 }
 
 /**
