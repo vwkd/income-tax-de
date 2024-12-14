@@ -163,6 +163,25 @@ export class Steuer {
   }
 
   /**
+   * Berechne Rabatt auf Kosten durch Absetzung
+   *
+   * @param K Kosten
+   * @param B Bemessungsgrundlage
+   * @returns Rabatt auf Kosten durch Absetzung
+   */
+  rabatt(K: number, B: number): number {
+    if (K < 0) {
+      throw new Error("Kosten können nicht negativ sein");
+    }
+
+    if (B < 0) {
+      throw new Error("Bemessungsgrundlage kann nicht negativ sein");
+    }
+
+    return this.steuerbetrag(B) - this.steuerbetrag(B - K);
+  }
+
+  /**
    * Sample nominalen Steuerbetrag
    *
    * @param start Minimum zvE, größer gleich 0, kleiner gleich erstem Eckwert des zvE in Zone 1
