@@ -9,7 +9,7 @@ export type { Point, Value } from "./types.ts";
 /**
  * Einkommensteuerrechner für Deutschland
  */
-export class Steuer {
+export class IncomeTax {
   #year: number;
   #parameter: Parameter;
   #inflation: Inflation;
@@ -38,7 +38,7 @@ export class Steuer {
    *
    * @returns Liste der Jahre
    */
-  static get jahre(): number[] {
+  static get years(): number[] {
     return parameters.flatMap(({ year }) =>
       Array.isArray(year) ? range(year[0], year[1] + 1) : year
     );
@@ -51,7 +51,7 @@ export class Steuer {
    * - ab 2002 in Euro (€)
    * @returns Punkte für Grundfreibeträge
    */
-  static get grundfreibetrag_data(): Value[] {
+  static get basicAllowanceData(): Value[] {
     return parameters.flatMap(({ year, pieces }) => {
       const basicAllowance = pieces.at(0)!.end;
 
@@ -77,7 +77,7 @@ export class Steuer {
    *
    * @returns Jahr
    */
-  jahr(): number {
+  get year(): number {
     return this.#year;
   }
 
@@ -87,7 +87,7 @@ export class Steuer {
    * - Merke: Eckwerte sind "bis", nicht "ab"
    * @returns Liste der Eckwerte des zvE
    */
-  eckwerte(): number[] {
+  get breakpoints(): number[] {
     return this.#parameter.pieces
       .map(({ end }) => end)
       .filter((end) => end !== Infinity);
@@ -99,14 +99,14 @@ export class Steuer {
    * @param zvE zu versteuerndes Einkommen
    * @returns Steuerbetrag
    */
-  steuerbetrag(zvE: number): number {
+  amount(zvE: number): number {
     if (zvE < 0) {
       throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
     }
 
-    // note: assumes pieces are sorted by start
+    // note: pieces are sorted by start
     const piece = this.#parameter.pieces
-      .find((p) => p.end === undefined || zvE <= p.end);
+      .find(({ end }) => end === Infinity || zvE <= end);
 
     if (piece === undefined) {
       throw new Error("unreachable");
@@ -121,7 +121,7 @@ export class Steuer {
    * @param zvE zu versteuerndes Einkommen
    * @returns Steuersatz
    */
-  steuersatz(zvE: number): number {
+  rateAverage(zvE: number): number {
     if (zvE < 0) {
       throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
     }
@@ -130,7 +130,7 @@ export class Steuer {
       return 0;
     }
 
-    return this.steuerbetrag(zvE) / zvE;
+    return this.amount(zvE) / zvE;
   }
 
   /**
@@ -139,14 +139,14 @@ export class Steuer {
    * @param zvE zu versteuerndes Einkommen
    * @returns Grenzsteuersatz
    */
-  grenzsteuersatz(zvE: number): number {
+  rateMargin(zvE: number): number {
     if (zvE < 0) {
       throw new Error("Zu versteuerndes Einkommen kann nicht negativ sein");
     }
 
-    // note: assumes pieces are sorted by start
+    // note: pieces are sorted by start
     const piece = this.#parameter.pieces
-      .find((p) => p.end === undefined || zvE <= p.end);
+      .find(({ end }) => end === Infinity || zvE <= end);
 
     if (piece === undefined) {
       throw new Error("unreachable");
@@ -162,7 +162,7 @@ export class Steuer {
    * @param B Bemessungsgrundlage
    * @returns Rabatt auf Kosten durch Absetzung
    */
-  rabatt(K: number, B: number): number {
+  discount(K: number, B: number): number {
     if (K < 0) {
       throw new Error("Kosten können nicht negativ sein");
     }
@@ -171,7 +171,7 @@ export class Steuer {
       throw new Error("Bemessungsgrundlage kann nicht negativ sein");
     }
 
-    return this.steuerbetrag(B) - this.steuerbetrag(B - K);
+    return this.amount(B) - this.amount(B - K);
   }
 
   /**
@@ -182,7 +182,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der zvE und nominalen Steuerbeträge
    */
-  steuerbetrag_data(start = 0, end = 350_000, steps = 1000): Point[] {
+  amountData(start = 0, end = 350_000, steps = 1000): Point[] {
     const year = this.#year;
     const breakpointStart = this.#parameter.pieces.at(0)!.end;
     const breakpointEnd = this.#parameter.pieces.at(-2)!.end;
@@ -208,7 +208,7 @@ export class Steuer {
     return range(start, end, step)
       .map((zvE) => ({
         zvE: zvE,
-        Wert: this.steuerbetrag(zvE),
+        Wert: this.amount(zvE),
         Wertart: "Nominalwert",
         Jahr: year,
       }));
@@ -223,7 +223,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der realen zvE und realen Steuerbeträge
    */
-  steuerbetrag_real_data(
+  amountRealData(
     baseyear: number,
     start = 0,
     end = 350_000,
@@ -237,7 +237,7 @@ export class Steuer {
       );
     }
 
-    const sb = this.steuerbetrag_data(start, end, steps);
+    const sb = this.amountData(start, end, steps);
 
     return sb.map((point) => ({
       ...point,
@@ -257,7 +257,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der zvE und nominalen Durchschnittssteuersätze
    */
-  steuersatz_data(start = 0, end = 350_000, steps = 1000): Point[] {
+  rateAverageData(start = 0, end = 350_000, steps = 1000): Point[] {
     const year = this.#year;
     const breakpointStart = this.#parameter.pieces.at(0)!.end;
     const breakpointEnd = this.#parameter.pieces.at(-2)!.end;
@@ -283,7 +283,7 @@ export class Steuer {
     return range(start, end, step)
       .map((zvE) => ({
         zvE: zvE,
-        Wert: this.steuersatz(zvE),
+        Wert: this.rateAverage(zvE),
         Wertart: "Nominalwert",
         Jahr: year,
       }));
@@ -298,7 +298,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der realen zvE und realen Durchschnittssteuersätze
    */
-  steuersatz_real_data(
+  rateAverageRealData(
     baseyear: number,
     start = 0,
     end = 350_000,
@@ -312,7 +312,7 @@ export class Steuer {
       );
     }
 
-    const sd = this.steuersatz_data(start, end, steps);
+    const sd = this.rateAverageData(start, end, steps);
 
     return sd.map((point) => ({
       ...point,
@@ -331,7 +331,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der zvE und nominalen Grenzsteuersätze
    */
-  grenzsteuersatz_data(start = 0, end = 350_000, steps = 1000): Point[] {
+  rateMarginData(start = 0, end = 350_000, steps = 1000): Point[] {
     const year = this.#year;
     const breakpointStart = this.#parameter.pieces.at(0)!.end;
     const breakpointEnd = this.#parameter.pieces.at(-2)!.end;
@@ -357,7 +357,7 @@ export class Steuer {
     return range(start, end, step)
       .map((zvE) => ({
         zvE: zvE,
-        Wert: this.grenzsteuersatz(zvE),
+        Wert: this.rateMargin(zvE),
         Wertart: "Nominalwert",
         Jahr: year,
       }));
@@ -372,7 +372,7 @@ export class Steuer {
    * @param steps Anzahl der Samples
    * @returns Liste der realen zvE und realen Grenzsteuersätze
    */
-  grenzsteuersatz_real_data(
+  rateMarginRealData(
     baseyear: number,
     start = 0,
     end = 350_000,
@@ -386,7 +386,7 @@ export class Steuer {
       );
     }
 
-    const sd = this.grenzsteuersatz_data(start, end, steps);
+    const sd = this.rateMarginData(start, end, steps);
 
     return sd.map((point) => ({
       ...point,

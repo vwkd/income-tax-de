@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { parameters } from "../src/data.ts";
-import { Steuer } from "../src/main.ts";
+import { IncomeTax } from "../src/main.ts";
 import { Inflation } from "@vwkd/inflation";
 
 const years = parameters.flatMap(({ year }) =>
@@ -12,7 +12,7 @@ const years = parameters.flatMap(({ year }) =>
 for (const year of years) {
   Deno.test(`${year}`, () => {
     const inflation = new Inflation({}, {});
-    const steuer = new Steuer(year, inflation);
+    const incomeTax = new IncomeTax(year, inflation);
     const parameter = parameters.find(({ year: y }) =>
       Array.isArray(y) ? y[0] <= year && year <= y[1] : y === year
     )!;
@@ -20,9 +20,9 @@ for (const year of years) {
     for (const { start, end: endMaybe, amount } of parameter.pieces) {
       const end = endMaybe === Infinity ? start + 1 : endMaybe;
       const mid = (start + end) / 2;
-      assertEquals(steuer.steuerbetrag(start), amount(start));
-      assertEquals(steuer.steuerbetrag(mid), amount(mid));
-      assertEquals(steuer.steuerbetrag(end), amount(end));
+      assertEquals(incomeTax.amount(start), amount(start));
+      assertEquals(incomeTax.amount(mid), amount(mid));
+      assertEquals(incomeTax.amount(end), amount(end));
     }
   });
 }

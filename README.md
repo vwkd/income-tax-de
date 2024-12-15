@@ -15,17 +15,17 @@ Einkommensteuerrechner für Deutschland
 ## Benutzung
 
 ```ts
-import { Steuer } from "@vwkd/income-tax-de";
+import { IncomeTax } from "@vwkd/income-tax-de";
 import { Inflation } from "@vwkd/inflation";
 import { currencyReplacements, inflationRates } from "@vwkd/inflation/de";
 
-const jahr = 2020;
+const year = 2020;
 const zvE = 14_533;
 
 const inflation = new Inflation(inflationRates, currencyReplacements);
-const steuer = new Steuer(jahr, inflation);
+const incomeTax = new IncomeTax(year, inflation);
 
-console.log(steuer.steuerbetrag(zvE)); // 973.03
-console.log(steuer.steuersatz(zvE)); // 0.0669
-console.log(steuer.grenzsteuersatz(zvE)); // 0.2397
+console.log(incomeTax.amount(zvE)); // 973.03
+console.log(incomeTax.rateAverage(zvE)); // 0.0669
+console.log(incomeTax.rateMargin(zvE)); // 0.2397
 ```
