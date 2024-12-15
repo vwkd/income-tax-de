@@ -3,7 +3,7 @@
   "specifiers": {
     "jsr:@std/assert@~0.218.2": "0.218.2",
     "jsr:@std/fmt@~0.218.2": "0.218.2",
-    "jsr:@vwkd/inflation@^0.0.5": "0.0.5",
+    "jsr:@vwkd/inflation@^0.0.7": "0.0.7",
     "npm:@types/d3@7": "7.4.3",
     "npm:d3@^7.9.0": "7.9.0_d3-selection@3.0.0"
   },
@@ -17,8 +17,8 @@
     "@std/fmt@0.218.2": {
       "integrity": "99526449d2505aa758b6cbef81e7dd471d8b28ec0dcb1491d122b284c548788a"
     },
-    "@vwkd/inflation@0.0.5": {
-      "integrity": "0fa907f2a8754873788dd0aadd33c572f7b9699cdba56e461a306bc1b043b5c6"
+    "@vwkd/inflation@0.0.7": {
+      "integrity": "1e286f444c27e96c1021ee1bca55ee2b87d891e67b85b2bbe8e5095678ed5307"
     }
   },
   "npm": {
@@ -418,7 +418,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@~0.218.2",
-      "jsr:@vwkd/inflation@^0.0.5",
+      "jsr:@vwkd/inflation@^0.0.7",
       "npm:d3@^7.9.0"
     ]
   }

@@ -11,7 +11,7 @@ const years = parameters.flatMap(({ year }) =>
 
 for (const year of years) {
   Deno.test(`${year}`, () => {
-    const inflation = new Inflation({}, {});
+    const inflation = new Inflation("DE");
     const incomeTax = new IncomeTax(year, inflation);
     const parameter = parameters.find(({ year: y }) =>
       Array.isArray(y) ? y[0] <= year && year <= y[1] : y === year
