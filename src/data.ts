@@ -5,7 +5,7 @@ import type { Parameter } from "./types.ts";
  *
  * - bis 2001 in Deutsche Mark (DM)
  * - ab 2002 in Euro (€)
- * - Quelle: [BMF - Lohn- und Einkommensteuerrechner - Tarifhistorie](https://www.bmf-steuerrechner.de/javax.faces.resource/2024_07_geä._Tarifhistorie_Steuerrechner.pdf.xhtml)
+ * - Quelle: [BMF - Lohn- und Einkommensteuerrechner - Tarifhistorie](https://www.bmf-steuerrechner.de/javax.faces.resource/2025_10_14_Tarifhistorie_Steuerrechner.pdf.xhtml)
  * - Ableitungsformeln für Grenzsteuersatzfunktion `rateMargin: (zvE: number) => number`
  *   - für `amount = (a * X + b) * X` und `X = (zvE - c) / d` ist `rateMargin = (2 * a * X + b) / d`
  *   - für `amount = ((a * X + b) * X + c) * X + d` und `X = (zvE - e) / f` ist `rateMargin = ((3 * a * X + 2 * b) * X + c) / f`
@@ -1452,6 +1452,98 @@ export const parameters: Parameter[] = [{
       start: 277_826,
       end: Infinity,
       amount: (zvE) => 0.45 * zvE - 18_971.06,
+      rateMargin: (_zvE) => 0.45,
+    },
+  ],
+}, {
+  year: 2025,
+  pieces: [
+    {
+      start: 0,
+      end: 12_096,
+      amount: (_zvE) => 0,
+      rateMargin: (_zvE) => 0,
+    },
+    {
+      start: 12_097,
+      end: 17_443,
+      amount: (zvE) => {
+        const y = (zvE - 12_096) / 10_000;
+        return (932.30 * y + 1_400) * y;
+      },
+      rateMargin: (zvE) => {
+        const y = (zvE - 12_096) / 10_000;
+        return (2 * 932.30 * y + 1_400) / 10_000;
+      },
+    },
+    {
+      start: 17_444,
+      end: 68_480,
+      amount: (zvE) => {
+        const z = (zvE - 17_443) / 10_000;
+        return (176.64 * z + 2_397) * z + 1_015.13;
+      },
+      rateMargin: (zvE) => {
+        const z = (zvE - 17_443) / 10_000;
+        return (2 * 176.64 * z + 2_397) / 10_000;
+      },
+    },
+    {
+      start: 68_481,
+      end: 277_825,
+      amount: (zvE) => 0.42 * zvE - 10_911.92,
+      rateMargin: (_zvE) => 0.42,
+    },
+    {
+      start: 277_826,
+      end: Infinity,
+      amount: (zvE) => 0.45 * zvE - 19_246.67,
+      rateMargin: (_zvE) => 0.45,
+    },
+  ],
+}, {
+  year: 2026,
+  pieces: [
+    {
+      start: 0,
+      end: 12_348,
+      amount: (_zvE) => 0,
+      rateMargin: (_zvE) => 0,
+    },
+    {
+      start: 12_349,
+      end: 17_799,
+      amount: (zvE) => {
+        const y = (zvE - 12_348) / 10_000;
+        return (914.51 * y + 1_400) * y;
+      },
+      rateMargin: (zvE) => {
+        const y = (zvE - 12_348) / 10_000;
+        return (2 * 914.51 * y + 1_400) / 10_000;
+      },
+    },
+    {
+      start: 17_800,
+      end: 69_878,
+      amount: (zvE) => {
+        const z = (zvE - 17_799) / 10_000;
+        return (173.10 * z + 2_397) * z + 1_034.87;
+      },
+      rateMargin: (zvE) => {
+        const z = (zvE - 17_799) / 10_000;
+        return (2 * 173.10 * z + 2_397) / 10_000;
+      },
+    },
+    {
+      start: 69_879,
+      end: 277_825,
+      amount: (zvE) => 0.42 * zvE - 11_135.63,
+      rateMargin: (_zvE) => 0.42,
+    },
+    {
+      start: 277_826,
+      end: Infinity,
+      amount: (zvE) => 0.45 * zvE - 19_470.38,
       rateMargin: (_zvE) => 0.45,
     },
   ],
