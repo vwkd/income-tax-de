@@ -16,13 +16,11 @@ Einkommensteuerrechner für Deutschland
 
 ```ts
 import { IncomeTax } from "@vwkd/income-tax-de";
-import { Inflation } from "@vwkd/inflation";
 
 const year = 2020;
 const zvE = 14_533;
 
-const inflation = new Inflation("DE");
-const incomeTax = new IncomeTax(year, inflation);
+const incomeTax = new IncomeTax(year);
 
 console.log(incomeTax.amount(zvE)); // 973.03
 console.log(incomeTax.rateAverage(zvE)); // 0.0669

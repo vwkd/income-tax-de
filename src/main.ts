@@ -19,7 +19,7 @@ export class IncomeTax {
    *
    * @param year Jahr
    */
-  constructor(year: number, inflation: Inflation) {
+  constructor(year: number) {
     const parameter = parameters.find(({ year: y }) =>
       Array.isArray(y) ? y[0] <= year && year <= y[1] : y === year
     );
@@ -30,7 +30,7 @@ export class IncomeTax {
 
     this.#year = year;
     this.#parameter = parameter;
-    this.#inflation = inflation;
+    this.#inflation = new Inflation("DE");
   }
 
   /**
