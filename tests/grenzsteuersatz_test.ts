@@ -1,7 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { parameters } from "../src/data.ts";
 import { IncomeTax } from "../src/main.ts";
-import { Inflation } from "@vwkd/inflation";
 
 const years = parameters.flatMap(({ year }) =>
   Array.isArray(year)
@@ -11,8 +10,7 @@ const years = parameters.flatMap(({ year }) =>
 
 for (const year of years) {
   Deno.test(`${year}`, () => {
-    const inflation = new Inflation("DE");
-    const incomeTax = new IncomeTax(year, inflation);
+    const incomeTax = new IncomeTax(year);
     const parameter = parameters.find(({ year: y }) =>
       Array.isArray(y) ? y[0] <= year && year <= y[1] : y === year
     )!;
