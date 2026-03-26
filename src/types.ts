@@ -1,11 +1,18 @@
+import type { parameters } from "./data.ts";
+import type { IntRange, Last } from "./types/utils.ts";
+
 /**
  * Parameter um Steuerbetrag zu berechnen
  */
 export interface Parameter {
   /**
-   * Jahr oder Intervall von Jahren für das die Parameter gelten
+   * Jahr ab dem Parameter gelten
    */
-  year: number | [number, number];
+  fromYear: number;
+  /**
+   * Jahr bis dem die Parameter gelten
+   */
+  toYear: number;
   /**
    * Stück der Steuerbetragsfunktion
    */
@@ -33,3 +40,10 @@ export interface Piece {
    */
   rateMargin: (zvE: number) => number;
 }
+
+type Parameters = typeof parameters;
+
+export type FirstYear = Parameters[0]["fromYear"];
+export type LastYear = Last<Parameters>["toYear"];
+export type Years = IntRange<FirstYear, LastYear>;
+export type Year = Years[number];

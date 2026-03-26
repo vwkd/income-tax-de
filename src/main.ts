@@ -1,5 +1,5 @@
-import type { Parameter } from "./types.ts";
-import { parameters } from "./data.ts";
+import type { Parameter, Year, Years } from "./types.ts";
+import { parameters, years } from "./data.ts";
 
 /**
  * Einkommensteuerrechner für Deutschland
@@ -7,8 +7,8 @@ import { parameters } from "./data.ts";
  * - bis 2001 in Deutsche Mark (DM)
  * - ab 2002 in Euro (€)
  */
-export class IncomeTax {
-  #year: number;
+export class IncomeTax<Y extends Year> {
+  #year: Y;
   #parameter: Parameter;
 
   /**
@@ -16,9 +16,9 @@ export class IncomeTax {
    *
    * @param year Jahr
    */
-  constructor(year: number) {
-    const parameter = parameters.find(({ year: y }) =>
-      Array.isArray(y) ? y[0] <= year && year <= y[1] : y === year
+  constructor(year: Y) {
+    const parameter = parameters.find(({ fromYear, toYear }) =>
+      fromYear <= year && year <= toYear
     );
 
     if (parameter === undefined) {
@@ -34,12 +34,8 @@ export class IncomeTax {
    *
    * @returns Liste der Jahre
    */
-  static get years(): number[] {
-    return parameters.flatMap(({ year }) =>
-      Array.isArray(year)
-        ? Array.from({ length: year[1] - year[0] + 1 }, (_, i) => year[0] + i)
-        : year
-    );
+  static get years(): Years {
+    return years;
   }
 
   /**
@@ -47,7 +43,7 @@ export class IncomeTax {
    *
    * @returns Jahr
    */
-  get year(): number {
+  get year(): Y {
     return this.#year;
   }
 

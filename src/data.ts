@@ -1,4 +1,4 @@
-import type { Parameter } from "./types.ts";
+import type { FirstYear, LastYear, Parameter, Years } from "./types.ts";
 
 /**
  * Parameter für Einkommensteuerrechner
@@ -11,8 +11,9 @@ import type { Parameter } from "./types.ts";
  *   - für `amount = (((a * X + b) * X + c) * X + d) * X + e` und `X = (zvE - f) / g` ist `rateMargin = (((4 * a * X + 3 * b) * X + 2 * c) * X + d) / g`
  * - Quelle: [BMF - Lohn- und Einkommensteuerrechner - Tarifhistorie](https://www.bmf-steuerrechner.de/javax.faces.resource/2025_10_14_Tarifhistorie_Steuerrechner.pdf.xhtml)
  */
-export const parameters: Parameter[] = [{
-  year: [1958, 1964],
+export const parameters = [{
+  fromYear: 1958,
+  toYear: 1964,
   pieces: [
     {
       start: 0,
@@ -58,7 +59,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1965, 1974],
+  fromYear: 1965,
+  toYear: 1974,
   pieces: [
     {
       start: 0,
@@ -116,7 +118,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1975, 1977],
+  fromYear: 1975,
+  toYear: 1977,
   pieces: [
     {
       start: 0,
@@ -163,7 +166,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 1978,
+  fromYear: 1978,
+  toYear: 1978,
   pieces: [
     {
       start: 0,
@@ -210,7 +214,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1979, 1980],
+  fromYear: 1979,
+  toYear: 1980,
   pieces: [
     {
       start: 0,
@@ -258,7 +263,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1981, 1985],
+  fromYear: 1981,
+  toYear: 1985,
   pieces: [
     {
       start: 0,
@@ -306,7 +312,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1986, 1987],
+  fromYear: 1986,
+  toYear: 1987,
   pieces: [
     {
       start: 0,
@@ -353,7 +360,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1988, 1989],
+  fromYear: 1988,
+  toYear: 1989,
   pieces: [
     {
       start: 0,
@@ -400,7 +408,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1990, 1995],
+  fromYear: 1990,
+  toYear: 1995,
   pieces: [
     {
       start: 0,
@@ -434,7 +443,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [1996, 1997],
+  fromYear: 1996,
+  toYear: 1997,
   pieces: [
     {
       start: 0,
@@ -474,7 +484,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 1998,
+  fromYear: 1998,
+  toYear: 1998,
   pieces: [
     {
       start: 0,
@@ -514,7 +525,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 1999,
+  fromYear: 1999,
+  toYear: 1999,
   pieces: [
     {
       start: 0,
@@ -566,7 +578,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2000,
+  fromYear: 2000,
+  toYear: 2000,
   pieces: [
     {
       start: 0,
@@ -606,7 +619,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2001,
+  fromYear: 2001,
+  toYear: 2001,
   pieces: [
     {
       start: 0,
@@ -646,7 +660,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [2002, 2003],
+  fromYear: 2002,
+  toYear: 2003,
   pieces: [
     {
       start: 0,
@@ -686,7 +701,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2004,
+  fromYear: 2004,
+  toYear: 2004,
   pieces: [
     {
       start: 0,
@@ -726,7 +742,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [2005, 2006],
+  fromYear: 2005,
+  toYear: 2006,
   pieces: [
     {
       start: 0,
@@ -766,7 +783,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [2007, 2008],
+  fromYear: 2007,
+  toYear: 2008,
   pieces: [
     {
       start: 0,
@@ -812,7 +830,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2009,
+  fromYear: 2009,
+  toYear: 2009,
   pieces: [
     {
       start: 0,
@@ -858,7 +877,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: [2010, 2012],
+  fromYear: 2010,
+  toYear: 2012,
   pieces: [
     {
       start: 0,
@@ -904,7 +924,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2013,
+  fromYear: 2013,
+  toYear: 2013,
   pieces: [
     {
       start: 0,
@@ -950,7 +971,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2014,
+  fromYear: 2014,
+  toYear: 2014,
   pieces: [
     {
       start: 0,
@@ -996,7 +1018,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2015,
+  fromYear: 2015,
+  toYear: 2015,
   pieces: [
     {
       start: 0,
@@ -1042,7 +1065,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2016,
+  fromYear: 2016,
+  toYear: 2016,
   pieces: [
     {
       start: 0,
@@ -1088,7 +1112,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2017,
+  fromYear: 2017,
+  toYear: 2017,
   pieces: [
     {
       start: 0,
@@ -1134,7 +1159,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2018,
+  fromYear: 2018,
+  toYear: 2018,
   pieces: [
     {
       start: 0,
@@ -1180,7 +1206,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2019,
+  fromYear: 2019,
+  toYear: 2019,
   pieces: [
     {
       start: 0,
@@ -1226,7 +1253,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2020,
+  fromYear: 2020,
+  toYear: 2020,
   pieces: [
     {
       start: 0,
@@ -1272,7 +1300,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2021,
+  fromYear: 2021,
+  toYear: 2021,
   pieces: [
     {
       start: 0,
@@ -1318,7 +1347,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2022,
+  fromYear: 2022,
+  toYear: 2022,
   pieces: [
     {
       start: 0,
@@ -1364,7 +1394,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2023,
+  fromYear: 2023,
+  toYear: 2023,
   pieces: [
     {
       start: 0,
@@ -1410,7 +1441,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2024,
+  fromYear: 2024,
+  toYear: 2024,
   pieces: [
     {
       start: 0,
@@ -1456,7 +1488,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2025,
+  fromYear: 2025,
+  toYear: 2025,
   pieces: [
     {
       start: 0,
@@ -1502,7 +1535,8 @@ export const parameters: Parameter[] = [{
     },
   ],
 }, {
-  year: 2026,
+  fromYear: 2026,
+  toYear: 2026,
   pieces: [
     {
       start: 0,
@@ -1547,4 +1581,11 @@ export const parameters: Parameter[] = [{
       rateMargin: (_zvE) => 0.45,
     },
   ],
-}];
+}] as const satisfies Parameter[];
+
+const firstYear = parameters.at(0)!.fromYear as FirstYear;
+const lastYear = parameters.at(-1)!.toYear as LastYear;
+export const years = Array.from(
+  { length: lastYear - firstYear + 1 },
+  (_, i) => firstYear + i,
+) as Years;

@@ -2,20 +2,11 @@ import { assertEquals } from "@std/assert";
 import { parameters } from "../src/data.ts";
 import { IncomeTax } from "../src/main.ts";
 
-const years = parameters.flatMap(({ year }) =>
-  Array.isArray(year)
-    ? Array.from({ length: year[1] - year[0] + 1 }, (_, i) => year[0] + i)
-    : year
-);
+for (const { fromYear, toYear, pieces } of parameters) {
+  Deno.test(`${fromYear}-${toYear}`, () => {
+    const incomeTax = new IncomeTax(fromYear);
 
-for (const year of years) {
-  Deno.test(`${year}`, () => {
-    const incomeTax = new IncomeTax(year);
-    const parameter = parameters.find(({ year: y }) =>
-      Array.isArray(y) ? y[0] <= year && year <= y[1] : y === year
-    )!;
-
-    for (const { start, end: endMaybe, rateMargin } of parameter.pieces) {
+    for (const { start, end: endMaybe, rateMargin } of pieces) {
       const end = endMaybe === Infinity ? start + 1 : endMaybe;
       const mid = (start + end) / 2;
       assertEquals(incomeTax.rateMargin(start), rateMargin(start));
