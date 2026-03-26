@@ -30,9 +30,9 @@ export class IncomeTax<Y extends Year> {
   }
 
   /**
-   * Liste die Jahre
+   * Liste unterstützter Jahre
    *
-   * @returns Liste der Jahre
+   * @returns unterstützte Jahre
    */
   static get years(): Years {
     return years;
@@ -66,10 +66,10 @@ export class IncomeTax<Y extends Year> {
   }
 
   /**
-   * Liste Eckwerte des zvE
+   * Liste Eckwerte des zu versteuernden Einkommens
    *
    * - Merke: Eckwerte sind "bis", nicht "ab"
-   * @returns Liste der Eckwerte des zvE
+   * @returns Eckwerte des zu versteuernden Einkommens
    */
   get breakpoints(): number[] {
     return this.#parameter.pieces
@@ -141,6 +141,11 @@ export class IncomeTax<Y extends Year> {
 
   /**
    * Berechne Rabatt auf Kosten durch Absetzung
+   *
+   * - entspricht Rabatt in Höhe des Grenzsteuersatzes
+   *  - für Bemessungsgrundlage irgendwo zwischen mit und ohne Absetzung
+   *  - falls Grenzsteuersatz linear, für Bemessungsgrundlage bei Hälfte zwischen mit und ohne Absetzung
+   *  - falls Grenzsteuersatz konstant, unabhängig von Bemessungsgrundlage
    *
    * @param K Kosten
    * @param B Bemessungsgrundlage vor Absetzung
