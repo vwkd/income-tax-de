@@ -14,6 +14,10 @@ export interface Parameter {
    */
   toYear: number;
   /**
+   * Währung
+   */
+  currency: "DEM" | "EUR";
+  /**
    * Stück der Steuerbetragsfunktion
    */
   pieces: Piece[];
@@ -47,3 +51,5 @@ export type FirstYear = Parameters[0]["fromYear"];
 export type LastYear = Last<Parameters>["toYear"];
 export type Years = IntRange<FirstYear, LastYear>;
 export type Year = Years[number];
+
+export type Currency = Parameters[number]["currency"];

@@ -3,8 +3,6 @@ import type { FirstYear, LastYear, Parameter, Years } from "./types.ts";
 /**
  * Parameter für Einkommensteuerrechner
  *
- * - bis 2001 in Deutsche Mark (DM)
- * - ab 2002 in Euro (€)
  * - Ableitungsformeln für Grenzsteuersatzfunktion `rateMargin: (zvE: number) => number`
  *   - für `amount = (a * X + b) * X` und `X = (zvE - c) / d` ist `rateMargin = (2 * a * X + b) / d`
  *   - für `amount = ((a * X + b) * X + c) * X + d` und `X = (zvE - e) / f` ist `rateMargin = ((3 * a * X + 2 * b) * X + c) / f`
@@ -14,6 +12,7 @@ import type { FirstYear, LastYear, Parameter, Years } from "./types.ts";
 export const parameters = [{
   fromYear: 1958,
   toYear: 1964,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -61,6 +60,7 @@ export const parameters = [{
 }, {
   fromYear: 1965,
   toYear: 1974,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -120,6 +120,7 @@ export const parameters = [{
 }, {
   fromYear: 1975,
   toYear: 1977,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -168,6 +169,7 @@ export const parameters = [{
 }, {
   fromYear: 1978,
   toYear: 1978,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -216,6 +218,7 @@ export const parameters = [{
 }, {
   fromYear: 1979,
   toYear: 1980,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -265,6 +268,7 @@ export const parameters = [{
 }, {
   fromYear: 1981,
   toYear: 1985,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -314,6 +318,7 @@ export const parameters = [{
 }, {
   fromYear: 1986,
   toYear: 1987,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -362,6 +367,7 @@ export const parameters = [{
 }, {
   fromYear: 1988,
   toYear: 1989,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -410,6 +416,7 @@ export const parameters = [{
 }, {
   fromYear: 1990,
   toYear: 1995,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -445,6 +452,7 @@ export const parameters = [{
 }, {
   fromYear: 1996,
   toYear: 1997,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -486,6 +494,7 @@ export const parameters = [{
 }, {
   fromYear: 1998,
   toYear: 1998,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -527,6 +536,7 @@ export const parameters = [{
 }, {
   fromYear: 1999,
   toYear: 1999,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -580,6 +590,7 @@ export const parameters = [{
 }, {
   fromYear: 2000,
   toYear: 2000,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -621,6 +632,7 @@ export const parameters = [{
 }, {
   fromYear: 2001,
   toYear: 2001,
+  currency: "DEM",
   pieces: [
     {
       start: 0,
@@ -662,6 +674,7 @@ export const parameters = [{
 }, {
   fromYear: 2002,
   toYear: 2003,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -703,6 +716,7 @@ export const parameters = [{
 }, {
   fromYear: 2004,
   toYear: 2004,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -744,6 +758,7 @@ export const parameters = [{
 }, {
   fromYear: 2005,
   toYear: 2006,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -785,6 +800,7 @@ export const parameters = [{
 }, {
   fromYear: 2007,
   toYear: 2008,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -832,6 +848,7 @@ export const parameters = [{
 }, {
   fromYear: 2009,
   toYear: 2009,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -879,6 +896,7 @@ export const parameters = [{
 }, {
   fromYear: 2010,
   toYear: 2012,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -926,6 +944,7 @@ export const parameters = [{
 }, {
   fromYear: 2013,
   toYear: 2013,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -973,6 +992,7 @@ export const parameters = [{
 }, {
   fromYear: 2014,
   toYear: 2014,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1020,6 +1040,7 @@ export const parameters = [{
 }, {
   fromYear: 2015,
   toYear: 2015,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1067,6 +1088,7 @@ export const parameters = [{
 }, {
   fromYear: 2016,
   toYear: 2016,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1114,6 +1136,7 @@ export const parameters = [{
 }, {
   fromYear: 2017,
   toYear: 2017,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1161,6 +1184,7 @@ export const parameters = [{
 }, {
   fromYear: 2018,
   toYear: 2018,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1208,6 +1232,7 @@ export const parameters = [{
 }, {
   fromYear: 2019,
   toYear: 2019,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1255,6 +1280,7 @@ export const parameters = [{
 }, {
   fromYear: 2020,
   toYear: 2020,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1302,6 +1328,7 @@ export const parameters = [{
 }, {
   fromYear: 2021,
   toYear: 2021,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1349,6 +1376,7 @@ export const parameters = [{
 }, {
   fromYear: 2022,
   toYear: 2022,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1396,6 +1424,7 @@ export const parameters = [{
 }, {
   fromYear: 2023,
   toYear: 2023,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1443,6 +1472,7 @@ export const parameters = [{
 }, {
   fromYear: 2024,
   toYear: 2024,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1490,6 +1520,7 @@ export const parameters = [{
 }, {
   fromYear: 2025,
   toYear: 2025,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1537,6 +1568,7 @@ export const parameters = [{
 }, {
   fromYear: 2026,
   toYear: 2026,
+  currency: "EUR",
   pieces: [
     {
       start: 0,
@@ -1589,3 +1621,7 @@ export const years = Array.from(
   { length: lastYear - firstYear + 1 },
   (_, i) => firstYear + i,
 ) as Years;
+
+export const currencies = [
+  ...new Set(parameters.map((parameter) => parameter.currency)),
+];

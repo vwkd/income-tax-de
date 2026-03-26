@@ -1,5 +1,5 @@
-import type { Parameter, Year, Years } from "./types.ts";
-import { parameters, years } from "./data.ts";
+import type { Currency, Parameter, Year, Years } from "./types.ts";
+import { currencies, parameters, years } from "./data.ts";
 
 /**
  * Einkommensteuerrechner für Deutschland
@@ -39,12 +39,30 @@ export class IncomeTax<Y extends Year> {
   }
 
   /**
+   * Liste verwendete Währungen
+   *
+   * @returns verwendete Währungen
+   */
+  static get currencies(): Currency[] {
+    return currencies;
+  }
+
+  /**
    * Liste Jahr
    *
    * @returns Jahr
    */
   get year(): Y {
     return this.#year;
+  }
+
+  /**
+   * Liste Währung
+   *
+   * @returns Währung
+   */
+  get currency(): Currency {
+    return this.#parameter.currency;
   }
 
   /**
