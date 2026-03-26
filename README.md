@@ -7,8 +7,6 @@ Einkommensteuerrechner für Deutschland
 ## Funktionen
 
 - berechne Steuerbetrag, Durchschnittssteuersatz und Grenzsteuersatz für zu versteuerndes Einkommen
-- sample Punkte für Plot
-- nominale und reale Werte
 
 
 
